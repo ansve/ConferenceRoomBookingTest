@@ -5,13 +5,18 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <InvariantGlobalization>true</InvariantGlobalization>
-    <PublishAot>true</PublishAot>
+    <PublishAot>false</PublishAot>
   </PropertyGroup>
 
   <ItemGroup>
     <Folder Include="Controllers\" />
     <Folder Include="Middleware\" />
     <Folder Include="Extensions\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ConferenceRoomBooking.Application\ConferenceRoomBooking.Application.csproj" />
+    <ProjectReference Include="..\ConferenceRoomBooking.Infrastructure\ConferenceRoomBooking.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>
