@@ -1,11 +1,18 @@
+using ConferenceRoomBooking.Application.Interfaces;
+using ConferenceRoomBooking.Application.Services;
 using ConferenceRoomBooking.Infrastructure.Persistence;
 using ConferenceRoomBooking.Infrastructure.Persistence.Seed;
+using ConferenceRoomBooking.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseInMemoryDatabase("ConferenceRoomBookingDb"));
+
+builder.Services.AddScoped<IConferenceRoomRepository, ConferenceRoomRepository>();
+
+builder.Services.AddScoped<IConferenceRoomService, ConferenceRoomService>();
 
 builder.Services.AddControllers();
 
