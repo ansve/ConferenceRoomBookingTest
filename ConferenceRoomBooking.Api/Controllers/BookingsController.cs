@@ -18,11 +18,8 @@ public class BookingsController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create(CreateBookingRequest request)
     {
-        var bookingId = await _bookingService.CreateAsync(request);
+        var booking = await _bookingService.CreateAsync(request);
 
-        return Ok(new
-        {
-            id = bookingId
-        });
+        return Ok(booking);
     }
 }

@@ -17,6 +17,8 @@ builder.Services.AddScoped<IBookingRepository, BookingRepository>();
 builder.Services.AddScoped<IConferenceRoomService, ConferenceRoomService>();
 builder.Services.AddScoped<IBookingService, BookingApplicationService>();
 
+builder.Services.AddScoped<BookingPriceCalculator>();
+
 builder.Services.AddControllers();
 
 var app = builder.Build();

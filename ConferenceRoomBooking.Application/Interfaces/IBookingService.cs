@@ -4,5 +4,5 @@ namespace ConferenceRoomBooking.Application.Interfaces;
 
 public interface IBookingService
 {
-    Task<Guid> CreateAsync(CreateBookingRequest request);
+    Task<BookingResponse> CreateAsync(CreateBookingRequest request);
 }

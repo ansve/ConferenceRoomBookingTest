@@ -9,4 +9,5 @@ public interface IConferenceRoomService
     Task<Guid> CreateAsync(CreateConferenceRoomRequest request);
     Task UpdateAsync(Guid id, UpdateConferenceRoomRequest request);
     Task DeleteAsync(Guid id);
+    Task<List<ConferenceRoomResponse>> SearchAvailableAsync(SearchAvailableRoomsRequest request);
 }

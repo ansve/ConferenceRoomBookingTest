@@ -25,6 +25,10 @@ namespace ConferenceRoomBooking.Infrastructure.Persistence.Configurations
                 .IsRequired()
                 .HasPrecision(18, 2);
 
+            builder.Property(booking => booking.TotalPrice)
+                .IsRequired()
+                .HasPrecision(18, 2);
+
             builder.HasOne(booking => booking.ConferenceRoom)
                 .WithMany()
                 .HasForeignKey(booking => booking.ConferenceRoomId)

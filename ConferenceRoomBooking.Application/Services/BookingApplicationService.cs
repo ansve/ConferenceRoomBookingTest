@@ -9,16 +9,24 @@ public class BookingApplicationService : IBookingService
 {
     private readonly IBookingRepository _bookingRepository;
     private readonly IConferenceRoomRepository _conferenceRoomRepository;
+    private readonly BookingPriceCalculator _priceCalculator;
 
     public BookingApplicationService(IBookingRepository bookingRepository,
-        IConferenceRoomRepository conferenceRoomRepository)
+        IConferenceRoomRepository conferenceRoomRepository,
+        BookingPriceCalculator priceCalculator)
     {
         _bookingRepository = bookingRepository;
         _conferenceRoomRepository = conferenceRoomRepository;
+        _priceCalculator = priceCalculator;
     }
 
-    public async Task<Guid> CreateAsync(CreateBookingRequest request)
+    public async Task<BookingResponse> CreateAsync(CreateBookingRequest request)
     {
+        if (request.StartTime >= request.EndTime)
+        {
+            throw new InvalidBookingPeriodException(request.StartTime, request.EndTime);
+        }
+
         var room = await _conferenceRoomRepository.GetByIdAsync(request.ConferenceRoomId);
 
         if (room is null)
@@ -33,10 +41,19 @@ public class BookingApplicationService : IBookingService
 
         if (hasOverlap)
         {
-            throw new BusinessException("Conference room is already booked for the selected period.");
+            throw new RoomAlreadyBookedException();
         }
 
+        var roomPrice = _priceCalculator.Calculate(
+            request.StartTime,
+            request.EndTime,
+            room.BasePricePerHour);
+
         var services = await _conferenceRoomRepository.GetServicesByIdsAsync(request.ServiceIds);
+
+        var servicesPrice = services.Sum(service => service.Price);
+
+        var totalPrice = roomPrice + servicesPrice;
 
         var foundServiceIds = services
             .Select(service => service.Id)
@@ -53,7 +70,8 @@ public class BookingApplicationService : IBookingService
             request.ConferenceRoomId,
             request.StartTime,
             request.EndTime,
-            room.BasePricePerHour);
+            room.BasePricePerHour,
+            totalPrice);
 
         foreach (var service in services)
         {
@@ -68,6 +86,15 @@ public class BookingApplicationService : IBookingService
         await _bookingRepository.AddAsync(booking);
         await _bookingRepository.SaveChangesAsync();
 
-        return booking.Id;
+        return new BookingResponse
+        {
+            Id = booking.Id,
+            ConferenceRoomId = booking.ConferenceRoomId,
+            StartTime = booking.StartTime,
+            EndTime = booking.EndTime,
+            RoomPrice = roomPrice,
+            ServicesPrice = servicesPrice,
+            TotalPrice = totalPrice
+        };
     }
 }

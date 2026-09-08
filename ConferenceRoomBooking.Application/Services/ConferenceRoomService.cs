@@ -11,10 +11,12 @@ namespace ConferenceRoomBooking.Application.Services;
 public class ConferenceRoomService : IConferenceRoomService
 {
     private readonly IConferenceRoomRepository _conferenceRoomRepository;
+    private readonly IBookingRepository _bookingRepository;
 
-    public ConferenceRoomService(IConferenceRoomRepository conferenceRoomRepository)
+    public ConferenceRoomService(IConferenceRoomRepository conferenceRoomRepository, IBookingRepository bookingRepository)
     {
         _conferenceRoomRepository = conferenceRoomRepository;
+        _bookingRepository = bookingRepository;
     }
 
     public async Task<List<ConferenceRoomResponse>> GetAllAsync()
@@ -109,5 +111,38 @@ public class ConferenceRoomService : IConferenceRoomService
         }
 
         await _conferenceRoomRepository.DeleteAsync(room);
+    }
+
+    public async Task<List<ConferenceRoomResponse>> SearchAvailableAsync(SearchAvailableRoomsRequest request)
+    {
+        if (request.StartTime >= request.EndTime)
+        {
+            throw new InvalidBookingPeriodException(request.StartTime, request.EndTime);
+        }
+
+        var rooms = await _conferenceRoomRepository.GetAllAsync();
+
+        var suitableRooms = rooms
+            .Where(room => room.Capacity >= request.Capacity)
+            .ToList();
+
+        var availableRooms = new List<ConferenceRoom>();
+
+        foreach (var room in suitableRooms)
+        {
+            var hasOverlap = await _bookingRepository.HasOverlapAsync(
+                room.Id,
+                request.StartTime,
+                request.EndTime);
+
+            if (!hasOverlap)
+            {
+                availableRooms.Add(room);
+            }
+        }
+
+        return availableRooms
+            .Select(ConferenceRoomMapper.ToResponse)
+            .ToList();
     }
 }

@@ -19,7 +19,15 @@ public class ExceptionHandlingMiddleware
         }
         catch (BusinessException exception)
         {
-            context.Response.StatusCode = StatusCodes.Status404NotFound;
+            context.Response.StatusCode = exception switch
+            {
+                InvalidBookingPeriodException => StatusCodes.Status400BadRequest,
+                RoomAlreadyBookedException => StatusCodes.Status409Conflict,
+                ConferenceRoomNotFoundException => StatusCodes.Status404NotFound,
+                ServiceNotFoundException => StatusCodes.Status404NotFound,
+                _ => StatusCodes.Status400BadRequest
+            };
+
             context.Response.ContentType = "application/json";
 
             await context.Response.WriteAsJsonAsync(new
