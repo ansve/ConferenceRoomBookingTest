@@ -28,9 +28,27 @@ public class ConferenceRoomRepository : IConferenceRoomRepository
             .ToListAsync();
     }
 
+    public async Task<ConferenceRoom?> GetByIdAsync(Guid id)
+    {
+        return await _context.ConferenceRooms
+            .Include(room => room.Services)
+            .FirstOrDefaultAsync(room => room.Id == id);
+    }
+
     public async Task AddAsync(ConferenceRoom room)
     {
         await _context.ConferenceRooms.AddAsync(room);
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task SaveChangesAsync()
+    {
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task DeleteAsync(ConferenceRoom room)
+    {
+        _context.ConferenceRooms.Remove(room);
         await _context.SaveChangesAsync();
     }
 }

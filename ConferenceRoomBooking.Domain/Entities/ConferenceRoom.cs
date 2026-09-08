@@ -25,5 +25,12 @@ namespace ConferenceRoomBooking.Domain.Entities
             Capacity = capacity;
             BasePricePerHour = basePricePerHour;
         }
+
+        public void Update(string name, int capacity, decimal basePricePerHour)
+        {
+            Name = name;
+            Capacity = capacity;
+            BasePricePerHour = basePricePerHour;
+        }
     }
 }

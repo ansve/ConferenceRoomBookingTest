@@ -1,3 +1,4 @@
+using ConferenceRoomBooking.Api.Middleware;
 using ConferenceRoomBooking.Application.Interfaces;
 using ConferenceRoomBooking.Application.Services;
 using ConferenceRoomBooking.Infrastructure.Persistence;
@@ -11,12 +12,16 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseInMemoryDatabase("ConferenceRoomBookingDb"));
 
 builder.Services.AddScoped<IConferenceRoomRepository, ConferenceRoomRepository>();
+builder.Services.AddScoped<IBookingRepository, BookingRepository>();
 
 builder.Services.AddScoped<IConferenceRoomService, ConferenceRoomService>();
+builder.Services.AddScoped<IBookingService, BookingApplicationService>();
 
 builder.Services.AddControllers();
 
 var app = builder.Build();
+
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.MapControllers();
 

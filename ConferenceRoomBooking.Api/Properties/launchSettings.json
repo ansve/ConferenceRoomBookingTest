@@ -5,7 +5,7 @@
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
-      "launchUrl": "",
+      "launchUrl": "api/conference-rooms",
       "applicationUrl": "http://localhost:5159",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"

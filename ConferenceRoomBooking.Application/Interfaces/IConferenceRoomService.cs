@@ -1,10 +1,12 @@
 ﻿using ConferenceRoomBooking.Application.DTOs;
-using ConferenceRoomBooking.Domain.Entities;
 
 namespace ConferenceRoomBooking.Application.Interfaces;
 
 public interface IConferenceRoomService
 {
-    Task<List<ConferenceRoom>> GetAllAsync();
+    Task<List<ConferenceRoomResponse>> GetAllAsync();
+    Task<ConferenceRoomResponse?> GetByIdAsync(Guid id);
     Task<Guid> CreateAsync(CreateConferenceRoomRequest request);
+    Task UpdateAsync(Guid id, UpdateConferenceRoomRequest request);
+    Task DeleteAsync(Guid id);
 }

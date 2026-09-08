@@ -1,25 +1,65 @@
-﻿using ConferenceRoomBooking.Application.Interfaces;
+﻿using ConferenceRoomBooking.Application.DTOs;
+using ConferenceRoomBooking.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ConferenceRoomBooking.Api.Controllers
+namespace ConferenceRoomBooking.Api.Controllers;
+
+[ApiController]
+[Route("api/conference-rooms")]
+public class ConferenceRoomsController : ControllerBase
 {
-    [ApiController]
-    [Route("api/conference-rooms")]
-    public class ConferenceRoomsController : ControllerBase
+    private readonly IConferenceRoomService _conferenceRoomService;
+
+    public ConferenceRoomsController(IConferenceRoomService conferenceRoomService)
     {
-        private readonly IConferenceRoomService _conferenceRoomService;
+        _conferenceRoomService = conferenceRoomService;
+    }
 
-        public ConferenceRoomsController(IConferenceRoomService conferenceRoomService)
+    [HttpGet]
+    public async Task<IActionResult> GetAlls()
+    {
+        var rooms = await _conferenceRoomService.GetAllAsync();
+
+        return Ok(rooms);
+    }
+
+    [HttpGet ("{id:guid}")]
+    public async Task<IActionResult> GetById(Guid id)
+    {
+        var room = await _conferenceRoomService.GetByIdAsync(id);
+
+        if(room is null)
         {
-            _conferenceRoomService = conferenceRoomService;
+            return NotFound();
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetAlls()
-        {
-            var rooms = await _conferenceRoomService.GetAllAsync();
+        return Ok(room);
+    }
 
-            return Ok(rooms);
-        }
+    [HttpPost]
+    public async Task<IActionResult> Create(CreateConferenceRoomRequest request)
+    {
+        var roomId = await _conferenceRoomService.CreateAsync(request);
+
+        return CreatedAtAction(
+            nameof(GetById),
+            new { id = roomId },
+            new { id = roomId });
+    }
+
+    [HttpPut("{id:guid}")]
+    public async Task<IActionResult> Update(Guid id, UpdateConferenceRoomRequest request)
+    {
+        await _conferenceRoomService.UpdateAsync(id, request);
+
+        return NoContent();
+    }
+
+    [HttpDelete("{id:guid}")]
+    public async Task<IActionResult> Delete(Guid id)
+    {
+        await _conferenceRoomService.DeleteAsync(id);
+
+        return NoContent();
     }
 }
