@@ -23,6 +23,14 @@ public class ConferenceRoomsController : ControllerBase
         return Ok(rooms);
     }
 
+    [HttpGet("available")]
+    public async Task<IActionResult> SearchAvailable([FromQuery] SearchAvailableRoomsRequest request)
+    {
+        var rooms = await _conferenceRoomService.SearchAvailableAsync(request);
+
+        return Ok(rooms);
+    }
+
     [HttpGet ("{id:guid}")]
     public async Task<IActionResult> GetById(Guid id)
     {

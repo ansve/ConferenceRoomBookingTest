@@ -2,10 +2,7 @@
 
 public class BookingPriceCalculator
 {
-    public decimal Calculate(
-        DateTime startTime,
-        DateTime endTime,
-        decimal basePricePerHour)
+    public decimal Calculate(DateTime startTime, DateTime endTime, decimal basePricePerHour)
     {
         decimal total = 0;
 
@@ -13,20 +10,20 @@ public class BookingPriceCalculator
 
         while (currentTime < endTime)
         {
-            var nextHour = currentTime.AddHours(1);
+            var nextBoundary = GetNextTariffBoundary(currentTime);
 
-            if (nextHour > endTime)
+            if (nextBoundary > endTime)
             {
-                nextHour = endTime;
+                nextBoundary = endTime;
             }
 
-            var hours = (decimal)(nextHour - currentTime).TotalHours;
+            var hours = (decimal)(nextBoundary - currentTime).TotalHours;
 
             var multiplier = GetPriceMultiplier(currentTime);
 
             total += basePricePerHour * hours * multiplier;
 
-            currentTime = nextHour;
+            currentTime = nextBoundary;
         }
 
         return total;
@@ -55,5 +52,30 @@ public class BookingPriceCalculator
         }
 
         return 1.00m;
+    }
+
+    private DateTime GetNextTariffBoundary(DateTime time)
+    {
+        var date = time.Date;
+        var currentTime = time.TimeOfDay;
+
+        var boundaries = new[]
+        {
+            TimeSpan.FromHours(9),
+            TimeSpan.FromHours(12),
+            TimeSpan.FromHours(14),
+            TimeSpan.FromHours(18),
+            TimeSpan.FromHours(23)
+        };
+
+        foreach (var boundary in boundaries)
+        {
+            if (boundary > currentTime)
+            {
+                return date.Add(boundary);
+            }
+        }
+
+        return date.AddDays(1).AddHours(6);
     }
 }

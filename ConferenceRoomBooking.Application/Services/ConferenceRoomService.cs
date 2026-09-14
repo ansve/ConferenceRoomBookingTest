@@ -120,6 +120,11 @@ public class ConferenceRoomService : IConferenceRoomService
             throw new InvalidBookingPeriodException(request.StartTime, request.EndTime);
         }
 
+        if (request.Capacity <= 0)
+        {
+            throw new InvalidCapacityException(request.Capacity);
+        }
+
         var rooms = await _conferenceRoomRepository.GetAllAsync();
 
         var suitableRooms = rooms

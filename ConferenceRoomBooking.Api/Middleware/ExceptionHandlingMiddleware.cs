@@ -25,6 +25,7 @@ public class ExceptionHandlingMiddleware
                 RoomAlreadyBookedException => StatusCodes.Status409Conflict,
                 ConferenceRoomNotFoundException => StatusCodes.Status404NotFound,
                 ServiceNotFoundException => StatusCodes.Status404NotFound,
+                InvalidCapacityException => StatusCodes.Status400BadRequest,
                 _ => StatusCodes.Status400BadRequest
             };
 
